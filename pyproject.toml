@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "multi-cite"
+version = "0.1.0"
+description = "Generate reference lists from standard identifiers"
+authors = ["Phillip Lord"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+panflute = "^1.12.5"
+requests = "^2.26.0"
+bibtexparser = "^1.2.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.poetry.scripts]
+multi-cite="multi_cite:main"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
