@@ -51,13 +51,25 @@ def complete():
 
     with open(bibliography_file, "a") as f:
         f.write(new_references)
+
     eprint("Updated ",bibliography_file)
 
-##def doi_in_bibtex(doi, bibtex)
 def doi_filter(elem, doc):
     global new_references
     ## TODO get this from bibliography file
     fetch_existing_refs(bibliography_file)
+
+    if type(elem) == MetaMap:
+        bib = elem.content.get("bibliography")
+        if not bib:
+            elem.content["bibliography"] = MetaList(
+                MetaInlines(Str(bibliography_file))
+            )
+            return elem
+
+        if not MetaInlines(Str(bibliography_file)) in bib:
+            bib.append(MetaInlines(Str(bibliography_file)))
+            return elem
 
     if type(elem) == Cite:
         for citation in elem.citations:
@@ -69,7 +81,7 @@ def doi_filter(elem, doc):
 
                 citation.id=doi
 
-    return elem
+        return elem
 
 ## A set of DOIs that are either in the existing .bib file or will be
 ## added to it at the end of the filter
@@ -79,4 +91,4 @@ known_doi=set()
 new_references=""
 
 ## The bibfile
-bibliography_file="__from_DOI.bib"
+bibliography_file="__multi_cite.bib"
