@@ -14,7 +14,7 @@ def doi_to_bibtex(doi):
     )
 
     bibdatabase = bibtexparser.loads(r.text)
-    bibdatabase.entries[0]["ID"] = doi
+    bibdatabase.entries[0]["ID"] = "doi:" + doi
 
     return bibtexparser.dumps(bibdatabase)
 
@@ -30,15 +30,8 @@ Return None if citeid is not a DOI"""
 
     return None
 
-def fetch_existing_refs():
-    global known_doi
-    if known_doi == None:
-        known_doi=set()
-        for entry in bib.bibtex_database().entries:
-            known_doi.add(entry["ID"])
-
 def doi_needed(doi):
-    return not doi in known_doi
+    return not bib.is_existing_ref(doi)
 
 def complete(doc):
     """Complete the document"""
@@ -48,23 +41,19 @@ def complete(doc):
 def doi_filter(elem, doc):
     global new_references
     ## TODO get this from bibliography file
-    fetch_existing_refs()
 
     if type(elem) == Cite:
         for citation in elem.citations:
             if doi := normalize_citeid_to_doi(citation.id):
-                if doi_needed(doi):
+                prefixed_doi = "doi:" + doi
+                if doi_needed(prefixed_doi):
                     eprint("Resolving DOI", doi)
                     new_references += doi_to_bibtex(doi)
-                    known_doi.add(doi)
+                    bib.push_new_ref(prefixed_doi)
 
-                citation.id=doi
+                citation.id=prefixed_doi
 
         return elem
-
-## A set of DOIs that are either in the existing .bib file or will be
-## added to it at the end of the filter
-known_doi=None
 
 ## New references to add to the bibfile
 new_references=""

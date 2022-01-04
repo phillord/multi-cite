@@ -5,6 +5,14 @@ import os
 
 __bibliography_file="__multi_cite.bib"
 __bibtex_database=None
+__existing_refs=None
+
+def is_existing_ref(refid):
+    fetch_existing_refs()
+    return refid in __existing_refs
+
+def push_new_ref(refid):
+    __existing_refs.add(refid)
 
 def bibtex_database():
     global __bibtex_database
@@ -15,6 +23,14 @@ def bibtex_database():
         __bibtex_database = bibtexparser.bibdatabase.BibDatabase()
 
     return __bibtex_database
+
+def fetch_existing_refs():
+    global __existing_refs
+
+    if __existing_refs == None:
+        __existing_refs=set()
+        for entry in bibtex_database().entries:
+            __existing_refs.add(entry["ID"])
 
 def bib_filter(elem, doc):
     if type(elem) == MetaMap:
