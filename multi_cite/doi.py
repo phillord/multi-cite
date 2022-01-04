@@ -1,12 +1,9 @@
+from . import bib
+from .util import eprint
 from panflute import *
+
 import bibtexparser
-import os
 import requests
-import sys
-
-
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
 
 
 def doi_to_bibtex(doi):
@@ -33,43 +30,25 @@ Return None if citeid is not a DOI"""
 
     return None
 
-def fetch_existing_refs(bibliography_file):
+def fetch_existing_refs():
     global known_doi
-    if os.path.exists(bibliography_file):
-        with open(bibliography_file) as bibtex_file:
-            bibtex_database = bibtexparser.load(bibtex_file)
-            for entry in bibtex_database.entries:
-                known_doi.add(entry["ID"])
+    if known_doi == None:
+        known_doi=set()
+        for entry in bib.bibtex_database().entries:
+            known_doi.add(entry["ID"])
 
 def doi_needed(doi):
     return not doi in known_doi
 
-def complete():
+def complete(doc):
     """Complete the document"""
-    if not new_references:
-        return
-
-    with open(bibliography_file, "a") as f:
-        f.write(new_references)
-
-    eprint("Updated ",bibliography_file)
+    if new_references:
+        bib.push_to_bib(new_references)
 
 def doi_filter(elem, doc):
     global new_references
     ## TODO get this from bibliography file
-    fetch_existing_refs(bibliography_file)
-
-    if type(elem) == MetaMap:
-        bib = elem.content.get("bibliography")
-        if not bib:
-            elem.content["bibliography"] = MetaList(
-                MetaInlines(Str(bibliography_file))
-            )
-            return elem
-
-        if not MetaInlines(Str(bibliography_file)) in bib:
-            bib.append(MetaInlines(Str(bibliography_file)))
-            return elem
+    fetch_existing_refs()
 
     if type(elem) == Cite:
         for citation in elem.citations:
@@ -85,10 +64,7 @@ def doi_filter(elem, doc):
 
 ## A set of DOIs that are either in the existing .bib file or will be
 ## added to it at the end of the filter
-known_doi=set()
+known_doi=None
 
 ## New references to add to the bibfile
 new_references=""
-
-## The bibfile
-bibliography_file="__multi_cite.bib"

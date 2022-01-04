@@ -1,13 +1,16 @@
 __version__ = '0.1.0'
 
-from panflute import run_filter
+from panflute import run_filters
 from . import doi
-
-import sys
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
+from .util import eprint
 
 def main(doc=None):
-    f = run_filter(doi.doi_filter, doc=doc)
-    doi.complete()
+    f = run_filters(
+        [
+            bib.bib_filter,
+            doi.doi_filter,
+        ],
+        finalize=doi.complete,
+        doc=doc
+    )
     return f
