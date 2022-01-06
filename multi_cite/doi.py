@@ -33,27 +33,16 @@ Return None if citeid is not a DOI"""
 def doi_needed(doi):
     return not bib.is_existing_ref(doi)
 
-def complete(doc):
-    """Complete the document"""
-    if new_references:
-        bib.push_to_bib(new_references)
-
 def doi_filter(elem, doc):
-    global new_references
-    ## TODO get this from bibliography file
-
     if type(elem) == Cite:
         for citation in elem.citations:
             if doi := normalize_citeid_to_doi(citation.id):
                 prefixed_doi = "doi:" + doi
                 if doi_needed(prefixed_doi):
                     eprint("Resolving DOI", doi)
-                    new_references += doi_to_bibtex(doi)
+                    bib.push_to_bib(doi_to_bibtex(doi))
                     bib.push_new_ref(prefixed_doi)
 
                 citation.id=prefixed_doi
 
-        return elem
-
-## New references to add to the bibfile
-new_references=""
+    return elem

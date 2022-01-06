@@ -46,7 +46,9 @@ def bib_filter(elem, doc):
             return elem
 
 def push_to_bib(new_references):
-    with open(__bibliography_file, "a") as f:
-        f.write(new_references)
+    if new_references:
+        with open(__bibliography_file, "a") as f:
+            f.write(new_references)
+            f.write("\n")
 
-    eprint("Updated ", __bibliography_file)
+        eprint("Updated ", __bibliography_file)

@@ -1,6 +1,7 @@
 __version__ = '0.1.0'
 
 from panflute import run_filters
+from . import pubmed
 from . import doi
 from .util import eprint
 
@@ -9,8 +10,8 @@ def main(doc=None):
         [
             bib.bib_filter,
             doi.doi_filter,
+            pubmed.pubmed_filter
         ],
-        finalize=doi.complete,
         doc=doc
     )
     return f
