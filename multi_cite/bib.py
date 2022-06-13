@@ -3,7 +3,7 @@ from .util import eprint
 import bibtexparser
 import os
 
-__bibliography_file="__multi_cite.bib"
+__bibliography_file=os.getenv("MULTICITE_BIB", "__multi_cite.bib")
 __bibtex_database=None
 __existing_refs=None
 
@@ -33,7 +33,9 @@ def fetch_existing_refs():
             __existing_refs.add(entry["ID"])
 
 def bib_filter(elem, doc):
-    if type(elem) == MetaMap:
+    ##eprint("doc", doc)
+    ##eprint("type", type(doc))
+    if type(elem) == MetaMap and elem.parent == doc:
         bib = elem.content.get("bibliography")
         if not bib:
             elem.content["bibliography"] = MetaList(
