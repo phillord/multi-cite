@@ -8,6 +8,8 @@ import requests
 
 def doi_to_bibtex(doi):
     """Given a DOI fetch the relevant bibtex record"""
+    eprint("doi_to_bibtex", doi)
+
     r = requests.get(
         "https://doi.org/" + doi,
         headers={"Accept":"application/x-bibtex"}
@@ -33,16 +35,19 @@ Return None if citeid is not a DOI"""
 def doi_needed(doi):
     return not bib.is_existing_ref(doi)
 
+def resolve_and_add(doi):
+    prefixed_doi = "doi:" + doi
+    if doi_needed(prefixed_doi):
+        eprint("Resolving DOI", doi)
+        bib.push_to_bib(doi_to_bibtex(doi))
+        bib.push_new_ref(prefixed_doi)
+
+    return prefixed_doi
+
 def doi_filter(elem, doc):
     if type(elem) == Cite:
         for citation in elem.citations:
             if doi := normalize_citeid_to_doi(citation.id):
-                prefixed_doi = "doi:" + doi
-                if doi_needed(prefixed_doi):
-                    eprint("Resolving DOI", doi)
-                    bib.push_to_bib(doi_to_bibtex(doi))
-                    bib.push_new_ref(prefixed_doi)
-
-                citation.id=prefixed_doi
+                citation.id=resolve_and_add(doi)
 
     return elem

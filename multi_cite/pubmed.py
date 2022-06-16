@@ -1,4 +1,5 @@
 from . import bib
+from . import doi
 from .util import eprint
 from panflute import *
 
@@ -8,7 +9,7 @@ import requests
 
 __entrez_slug="&email=knowledgeblog%40googlegroups.com&tool=multicite"
 
-def pmid_to_bibtex(pmid):
+def pmid_to_xml(pmid):
     eprint("pmid to bibtex", pmid)
     r = requests.get(
         "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?{}&db=pubmed&retmode=xml&id={}"
@@ -17,8 +18,13 @@ def pmid_to_bibtex(pmid):
             pmid
         )
     )
-
+    eprint(r.text)
     root = ET.fromstring(r.text)
+
+    return root
+
+def pmid_to_bibtex(pmid):
+    root = pmid_to_xml(pmid)
 
     authors=[]
     for auth in root.findall(".//AuthorList/Author"):
@@ -47,7 +53,6 @@ def pmid_to_bibtex(pmid):
 
     url = "http://www.ncbi.nlm.nih.gov/pubmed/{pmid}"
 }}
-    
     """
     eprint(bibtex)
     return bibtex
@@ -64,7 +69,6 @@ def pmid_needed(pmid):
 
 def pubmed_filter(elem, doc):
     if type(elem) == Cite:
-        eprint(elem)
         for citation in elem.citations:
             if pmid := normalize_citeid_to_pmid(citation.id):
                 prefixed_pmid = "pubmed:" + pmid
@@ -76,3 +80,19 @@ def pubmed_filter(elem, doc):
                 citation.id=prefixed_pmid
 
     return elem
+
+def pmid_to_doi(pmid):
+    eprint("pmid_to_doi", pmid)
+    root = pmid_to_xml(pmid)
+
+    return root.find(".//PubmedData//ArticleIdList//ArticleId[@IdType='doi']").text
+
+def pubmed_filter(elem, doc):
+    if type(elem) == Cite:
+        for citation in elem.citations:
+            if pmid := normalize_citeid_to_pmid(citation.id):
+                citation.id=doi.resolve_and_add(
+                    pmid_to_doi(
+                        pmid
+                    )
+                )
