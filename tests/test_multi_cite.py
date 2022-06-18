@@ -47,5 +47,11 @@ def test_doi():
 def test_pubmed():
     output_eq(pandoc("pubmed.md"), "pubmed_expected.md")
 
+def test_url_raw():
+    output_eq(pandoc("url.md"), "url_expected.md")
+
+def test_url2_prefixed():
+    output_eq(pandoc("url2.md"), "url2_expected.md")
+
 def test_version():
     assert __version__ == '0.1.0'
