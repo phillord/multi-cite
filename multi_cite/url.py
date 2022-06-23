@@ -1,5 +1,5 @@
 from panflute import *
-from .util import eprint
+from .util import eprint, url_to_bibtex
 from . import bib
 
 def normalize_citeid_to_url(citeid):
@@ -10,10 +10,7 @@ def normalize_citeid_to_url(citeid):
 
     return False
 
-def url_to_bibtex(url):
-    return f'''@MISC{{url:{url},
-    url =          {{{url}}},
-}}'''
+
 
 def resolve_and_add(url):
     url_id = f"url:{url}"

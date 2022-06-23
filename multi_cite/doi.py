@@ -1,5 +1,5 @@
 from . import bib
-from .util import eprint
+from .util import eprint, url_to_bibtex
 from panflute import *
 
 import bibtexparser
@@ -16,7 +16,10 @@ def doi_to_bibtex(doi):
     )
 
     bibdatabase = bibtexparser.loads(r.text)
-    bibdatabase.entries[0]["ID"] = "doi:" + doi
+    if len(bibdatabase.entries) > 0:
+        bibdatabase.entries[0]["ID"] = "doi:" + doi
+    else:
+        return url_to_bibtex(f"https://dx.doi.org/{doi}")
 
     return bibtexparser.dumps(bibdatabase)
 
