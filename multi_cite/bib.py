@@ -1,5 +1,6 @@
 from panflute import *
 from .util import eprint
+from filelock import FileLock
 import bibtexparser
 import os
 
@@ -17,8 +18,10 @@ def push_new_ref(refid):
 def bibtex_database():
     global __bibtex_database
     if os.path.exists(__bibliography_file):
-        with open(__bibliography_file) as bibtex_file:
-            __bibtex_database = bibtexparser.load(bibtex_file)
+        lock = FileLock(__bibliography_file + ".lock")
+        with lock:
+            with open(__bibliography_file) as bibtex_file:
+                __bibtex_database = bibtexparser.load(bibtex_file)
     else:
         __bibtex_database = bibtexparser.bibdatabase.BibDatabase()
 
@@ -49,8 +52,9 @@ def bib_filter(elem, doc):
 
 def push_to_bib(new_references):
     if new_references:
-        with open(__bibliography_file, "a") as f:
-            f.write(new_references)
-            f.write("\n")
-
-        eprint("Updated ", __bibliography_file)
+        lock = FileLock(__bibliography_file + ".lock")
+        with lock:
+            with open(__bibliography_file, "a") as f:
+                f.write(new_references)
+                f.write("\n")
+                eprint("Updated ", __bibliography_file)
