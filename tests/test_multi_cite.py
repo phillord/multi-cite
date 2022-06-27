@@ -53,5 +53,8 @@ def test_url_raw():
 def test_url2_prefixed():
     output_eq(pandoc("url2.md"), "url2_expected.md")
 
+def test_arxiv():
+    output_eq(pandoc("arxiv.md"), "arxiv_expected.md")
+
 def test_version():
     assert __version__ == '0.1.0'

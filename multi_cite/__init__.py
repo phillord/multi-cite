@@ -1,6 +1,7 @@
 __version__ = '0.1.0'
 
 from panflute import run_filters
+from . import arxiv
 from . import pubmed
 from . import doi
 from . import url
@@ -13,6 +14,7 @@ def main(doc=None):
             doi.doi_filter,
             pubmed.pubmed_filter,
             url.url_filter,
+            arxiv.arxiv_filter,
         ],
         doc=doc
     )
