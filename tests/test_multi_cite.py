@@ -44,6 +44,9 @@ def output_eq(f, g):
 def test_doi():
     output_eq(pandoc("doi.md"), "doi_expected.md")
 
+def test_doi_handbook():
+    output_eq(pandoc("doi_handbook.md"), "doi_handbook_expected.md")
+
 def test_pubmed():
     output_eq(pandoc("pubmed.md"), "pubmed_expected.md")
 

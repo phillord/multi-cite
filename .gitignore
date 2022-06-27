@@ -2,3 +2,4 @@
 /multi_cite.egg-info/
 /multi_cite/__pycache__/
 /__multi_cite.bib
+/tests/__pycache__/

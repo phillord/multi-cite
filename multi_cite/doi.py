@@ -16,10 +16,11 @@ def doi_to_bibtex(doi):
     )
 
     bibdatabase = bibtexparser.loads(r.text)
+
     if len(bibdatabase.entries) > 0:
         bibdatabase.entries[0]["ID"] = "doi:" + doi
     else:
-        return url_to_bibtex(f"https://dx.doi.org/{doi}")
+        return url_to_bibtex(f"https://dx.doi.org/{doi}", "doi:" + doi)
 
     return bibtexparser.dumps(bibdatabase)
 

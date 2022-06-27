@@ -11,7 +11,6 @@ def normalize_citeid_to_url(citeid):
     return False
 
 
-
 def resolve_and_add(url):
     url_id = f"url:{url}"
     if not bib.is_existing_ref(url_id):
